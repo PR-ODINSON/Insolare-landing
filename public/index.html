@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insolare — Operations Hub</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Background decoration -->
+  <div class="bg-orb bg-orb--1"></div>
+  <div class="bg-orb bg-orb--2"></div>
+  <div class="bg-orb bg-orb--3"></div>
+
+  <div class="wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header__logo">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="13" stroke="white" stroke-width="2"/>
+            <path d="M14 4 L14 14 L22 14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="3" fill="white"/>
+          </svg>
+        </div>
+        <span class="logo-text">Insolare</span>
+      </div>
+      <div class="header__status" id="statusBar">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-label" id="statusLabel">Checking services…</span>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <p class="hero__eyebrow">Operations Hub</p>
+      <h1 class="hero__title">
+        Manage everything<br />
+        <span class="hero__title--accent">from one place</span>
+      </h1>
+      <p class="hero__subtitle">
+        Access the Attendance System and O&amp;M Module seamlessly — all connected through a single dashboard.
+      </p>
+    </section>
+
+    <!-- App Cards -->
+    <section class="cards">
+
+      <!-- Attendance System -->
+      <a class="card" id="cardAttendance" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="card__glow card__glow--blue"></div>
+        <div class="card__icon card__icon--blue">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="6" width="24" height="22" rx="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M10 6V3M22 6V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M4 12H28" stroke="currentColor" stroke-width="2"/>
+            <path d="M11 18L14 21L21 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card__content">
+          <h2 class="card__title">Attendance System</h2>
+          <p class="card__desc">Track employee attendance, manage schedules, and generate reports with real-time data.</p>
+          <div class="card__meta">
+            <span class="card__badge card__badge--blue">Live</span>
+            <span class="card__url" id="attendanceUrl">Loading…</span>
+          </div>
+        </div>
+        <div class="card__arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card__status-indicator" id="attendanceStatus"></div>
+      </a>
+
+      <!-- O&M Module -->
+      <a class="card" id="cardOM" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="card__glow card__glow--emerald"></div>
+        <div class="card__icon card__icon--emerald">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="5" stroke="currentColor" stroke-width="2"/>
+            <path d="M16 4V7M16 25V28M4 16H7M25 16H28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M7.76 7.76L9.88 9.88M22.12 22.12L24.24 24.24M7.76 24.24L9.88 22.12M22.12 9.88L24.24 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card__content">
+          <h2 class="card__title">O&amp;M Module</h2>
+          <p class="card__desc">Oversee operations and maintenance workflows, asset tracking, and field service management.</p>
+          <div class="card__meta">
+            <span class="card__badge card__badge--emerald">Live</span>
+            <span class="card__url" id="omUrl">Loading…</span>
+          </div>
+        </div>
+        <div class="card__arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card__status-indicator" id="omStatus"></div>
+      </a>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Insolare &copy; <span id="year"></span> &mdash; Internal Operations Platform</p>
+    </footer>
+
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    async function checkService(url) {
+      try {
+        const res = await fetch(url, { mode: 'no-cors', cache: 'no-store' });
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    async function init() {
+      const res = await fetch('/config');
+      const { attendanceUrl, omUrl } = await res.json();
+
+      // Populate URLs and hrefs
+      document.getElementById('attendanceUrl').textContent = attendanceUrl;
+      document.getElementById('omUrl').textContent = omUrl;
+      document.getElementById('cardAttendance').href = attendanceUrl;
+      document.getElementById('cardOM').href = omUrl;
+
+      // Check liveness
+      const [attOk, omOk] = await Promise.all([
+        checkService(attendanceUrl),
+        checkService(omUrl),
+      ]);
+
+      const attIndicator = document.getElementById('attendanceStatus');
+      const omIndicator = document.getElementById('omStatus');
+
+      attIndicator.classList.add(attOk ? 'indicator--online' : 'indicator--offline');
+      omIndicator.classList.add(omOk ? 'indicator--online' : 'indicator--offline');
+
+      const allOnline = attOk && omOk;
+      const dot = document.getElementById('statusDot');
+      const label = document.getElementById('statusLabel');
+
+      if (allOnline) {
+        dot.classList.add('dot--online');
+        label.textContent = 'All services running';
+      } else if (!attOk && !omOk) {
+        dot.classList.add('dot--offline');
+        label.textContent = 'Services unreachable';
+      } else {
+        dot.classList.add('dot--partial');
+        label.textContent = 'Some services offline';
+      }
+    }
+
+    init().catch(console.error);
+  </script>
+
+</body>
+</html>
